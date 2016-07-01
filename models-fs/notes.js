@@ -61,7 +61,7 @@ var _dirname = undefined;
                             cb(err);
                         } else {
                             thenotes.push({
-                                key: fname,
+                                key: key,
                                 title: note.title
                             });
                             cb();

@@ -73,7 +73,7 @@ module.exports = {
                 if(!err) {
                     res.render('noteedit', {
                         title: data ? ("Edit " + data.title) : "Add a Note",
-                        doceate : false,
+                        docreate : false,
                         notekey: req.query.key,
                         note: data
                     });
