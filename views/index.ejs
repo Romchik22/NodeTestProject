@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<% include top %>
+<%
+if (notes) {
+notes.forEach(function(note) {
+%><p><%= note.key %>:
+        <a href="/noteview?key=<%= note.key %>"><%= note.title %></a>
+</p><%
+});
+} %>
+<% include bottom %>
