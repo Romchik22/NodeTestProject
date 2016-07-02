@@ -91,7 +91,7 @@ module.exports = {
         if(req.query.key){
             readNote(req.query.key, res, function(err, data) {
                 if(!err) {
-                    res.render('notedelete', {
+                    res.render('notedestroy', {
                         title: data.title,
                         notekey: req.query.key,
                         note: data

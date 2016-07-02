@@ -17,15 +17,24 @@ var notes = require('./routes/notes');
 //   router.conf({ model: model});
 // });
 
-// LevelUp model
-var modelLevelUp = require('./models-levelup/notes');
-modelLevelUp.connect('./chap6', function (err) {
-  if(err) {
-    throw err;
-  }
+//LevelDb model
+// var modelLevelUp = require('./models-levelup/notes');
+// modelLevelUp.connect('./chap6', function (err) {
+//   if(err) {
+//     throw err;
+//   }
+// });
+// [routes, notes].forEach(function (router) {
+//   router.conf({model:modelLevelUp});
+// });
+
+//sqlite3 model
+var modelSqlite = require('./models-sqlite3/notes');
+modelSqlite.connect('./chap06.sqlite3', function (err) {
+  if(err) throw err;
 });
 [routes, notes].forEach(function (router) {
-  router.conf({model:modelLevelUp});
+  router.conf({model: modelSqlite});
 });
 
 var app = express();
