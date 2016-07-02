@@ -7,14 +7,25 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var notes = require('./routes/notes');
-var model = require('./models-fs/notes');
-model.connect("./Notes", function (err) {
+// var model = require('./models-fs/notes');
+// model.connect("./Notes", function (err) {
+//   if(err) {
+//     throw err;
+//   }
+// });
+// [routes, notes].forEach(function (router) {
+//   router.conf({ model: model});
+// });
+
+// LevelUp model
+var modelLevelUp = require('./models-levelup/notes');
+modelLevelUp.connect('./chap6', function (err) {
   if(err) {
     throw err;
   }
 });
 [routes, notes].forEach(function (router) {
-  router.conf({ model: model});
+  router.conf({model:modelLevelUp});
 });
 
 var app = express();
