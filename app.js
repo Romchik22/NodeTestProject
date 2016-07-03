@@ -57,6 +57,11 @@ var notes = require('./routes/notes');
 //   router.conf({ model: modelSeq});
 // });
 
+var modelMongo = require('./models-mongoose/notes'); // you must install mongoDb and create db "chap6"
+modelMongo.connect("mongodb://localhost/chap06");
+[routes, notes].forEach(function (router) {
+  router.conf({model: modelMongo});
+});
 var app = express();
 
 
