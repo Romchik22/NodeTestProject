@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var notes = require('./routes/notes');
+
 // var model = require('./models-fs/notes');
 // model.connect("./Notes", function (err) {
 //   if(err) {
@@ -28,14 +29,33 @@ var notes = require('./routes/notes');
 //   router.conf({model:modelLevelUp});
 // });
 
-//sqlite3 model
-var modelSqlite = require('./models-sqlite3/notes');
-modelSqlite.connect('./chap06.sqlite3', function (err) {
-  if(err) throw err;
-});
-[routes, notes].forEach(function (router) {
-  router.conf({model: modelSqlite});
-});
+// sqlite3 model
+// var modelSqlite = require('./models-sqlite3/notes');
+// modelSqlite.connect('./chap06.sqlite3', function (err) {
+//   if(err) throw err;
+// });
+// [routes, notes].forEach(function (router) {
+//   router.conf({model: modelSqlite});
+// });
+
+// sequelize model // you can add information about your db
+// var modelSeq = require('./models-sequelize/notes');
+// modelSeq.connect({
+//   dbname: "",
+//   username: "",
+//   password: "",
+//   params: {
+//     host: '',
+//     dialect: '',
+//     storage:'' // we can add path db
+//   }
+// },
+// function (err) {
+//   if (err) throw err;
+// });
+// [routes, notes ].forEach(function (router) {
+//   router.conf({ model: modelSeq});
+// });
 
 var app = express();
 
