@@ -7,5 +7,13 @@
 <body>
     <h1><%= title %></h1>
     <div class = 'navbar'>
-        <p><a href='/'>Home</a> | <a href='/noteadd'>ADD Note</a></p>
+        <p><a href='/'>home</a>
+            | <a href='/noteadd'>Add Note</a>
+            <% if(user) { %>
+            | <a href='/logout'>Log Out</a>
+            | logged in as <a href='/account'><%= user.username %></a>
+            <% } else { %>
+            | <a href='/login'>Log In</a>
+            <% } %>
+        </p>
     </div>

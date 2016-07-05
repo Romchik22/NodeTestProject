@@ -16,6 +16,9 @@
     "async": "*",
     "sqlite": "*",
     "sequelize": "*",
-    "mongoose": "*"
+    "mongoose": "*",
+    "connect-flash": "*",
+    "passport": "*",
+    "passport-local": "*"
   }
 }

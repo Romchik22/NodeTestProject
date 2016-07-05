@@ -3,7 +3,7 @@ var Note = undefined;
 
 module.exports = {
     connect: function (params, callback) {
-        var sequlz = new Sequelize(params.dbname, params.dbusername, params.password, params.params);
+        var sequlz = new Sequelize(params.dbname, params.username, params.password, params.params);
         Note = sequlz.define('Note', {
             notekey: {
                 type: Sequelize.STRING,

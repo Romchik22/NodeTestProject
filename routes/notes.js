@@ -4,16 +4,17 @@
 //var notes = require('../models/Notes');
 
 var notes = undefined;
-var readNote = function (key, res, done) {
+var readNote = function (key, user, res, cb) {
     notes.read(key, function (err, data) {
         if(err) {
             res.render('showerror', {
                 title: "Could not read note " + key,
+                user: user ? user : undefined,
                 error: err
             });
-            done(err);
+            cb(err);
         } else {
-            done(null, data);
+            cb(null, data);
         }
     });
 };
@@ -24,8 +25,10 @@ module.exports = {
     },
 
     add: function (req, res, next) {
+        var user = req.user ? req.user : undefined;
         res.render('noteedit', {
             title: "Add a Note",
+            user: user,
             docreate: true,
             notekey: "",
             note: undefined
@@ -49,11 +52,13 @@ module.exports = {
     },
 
     view: function (req, res, next) {
+        var user = req.user ? req.user : undefined;
         if(req.query.key) {
-            readNote(req.query.key, res, function (err, data) {
+            readNote(req.query.key, user, res, function (err, data) {
                 if (!err) {
                     res.render('noteview', {
                         title: data.title,
+                        user: user,
                         notekey: req.query.key,
                         note: data
                     });
@@ -62,17 +67,20 @@ module.exports = {
         } else {
             res.render('showerror', {
                 title: "No key given for Note",
+                user: user,
                 error: "Must provide a Key to view a Note"
             });
         }
     },
 
     edit: function (req, res, next) {
+        var user = req.user ? req.user : undefined;
         if(req.query.key){
-            readNote(req.query.key, res, function (err, data) {
+            readNote(req.query.key, user, res, function (err, data) {
                 if(!err) {
                     res.render('noteedit', {
                         title: data ? ("Edit " + data.title) : "Add a Note",
+                        user: user,
                         docreate : false,
                         notekey: req.query.key,
                         note: data
@@ -80,6 +88,7 @@ module.exports = {
                 } else {
                     res.render('showerror', {
                         title: "No key given for Note",
+                        user: user,
                         error: err
                     });
                 }
@@ -88,11 +97,13 @@ module.exports = {
     },
 
     destroy: function (req, res, next) {
+        var user = req.user ? req.user : undefined;
         if(req.query.key){
-            readNote(req.query.key, res, function(err, data) {
+            readNote(req.query.key, user, res, function(err, data) {
                 if(!err) {
                     res.render('notedestroy', {
                         title: data.title,
+                        user: user,
                         notekey: req.query.key,
                         note: data
                     });
@@ -102,6 +113,7 @@ module.exports = {
         else {
             res.render('showerror', {
                 title: "No key given for Note",
+                user: user,
                 error: "Must provide a Key to view Node"
             });
         }
