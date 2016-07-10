@@ -1,11 +1,30 @@
-<!DOCTYPE html>
 <% include top %>
-<%
+<div id='notetitles'>
+    <%
 if (notes) {
 notes.forEach(function(note) {
 %><p><%= note.key %>:
-        <a href="/noteview?key=<%= note.key %>"><%= note.title %></a>
-</p><%
-});
-} %>
+        <a href="/noteview?key=<%= note.key %>">
+            <%= note.title %></a>
+    </p><%
+    });
+    }
+    %>
+</div>
+<script>
+    $(document).ready(function() {
+        var getnotetitles = function() {
+            socket.emit('notetitles', function (notes) {
+                $('#notetitles').empty();
+                notes.forEach(function(note) {
+                    $('#notetitles').append('<p>'+ note.key
+                            +': <a href="/noteview?key='+ note.key +'">'
+                            + note.title +'</a></p>');
+                });
+            });
+        }
+        socket.on('noteupdated', getnotetitles);
+        socket.on('notedeleted', getnotetitles);
+    });
+</script>
 <% include bottom %>

@@ -14,6 +14,10 @@ var notes = require('./routes/notes');
 var users = require('./routes/users');
 var seqConnectParams = require('./sequelize-params');
 
+var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io').listen(server);
+
 
 // var model = require('./models-fs/notes');
 // model.connect("./Notes", function (err) {
@@ -48,11 +52,11 @@ var seqConnectParams = require('./sequelize-params');
 // sequelize model // you can add information about your db
 var notesModel = require('./models-sequelize/notes');
 notesModel.connect(seqConnectParams,
-function (err) {
-  if (err) throw err;
-});
-[routes, notes ].forEach(function (router) {
-  router.conf({ model: notesModel});
+    function (err) {
+        if (err) throw err;
+    });
+[routes, notes].forEach(function (router) {
+    router.conf({model: notesModel});
 });
 
 // //Mongo model
@@ -65,20 +69,16 @@ function (err) {
 var usersModel = require('./models-sequelize/users');
 usersModel.connect(seqConnectParams,
     function (err) {
-      if(err) throw err;
+        if (err) throw err;
     });
 users.conf({
-  users: usersModel,
-  passport: passport
-    });
+    users: usersModel,
+    passport: passport
+});
 
 passport.serializeUser(users.serialize);
 passport.deserializeUser(users.deserialize);
 passport.use(users.strategy);
-
-var app = express();
-
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -88,7 +88,7 @@ app.set('view engine', 'ejs');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser()); // 1
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieSession({secret: 'Node.js'})); // 2
@@ -107,14 +107,42 @@ app.post('/notedodestroy', users.ensureAuthenticated, notes.dodestroy);
 app.get('/account', users.ensureAuthenticated, users.doAccount);
 app.get('/login', users.doLogin);
 app.post('/login', passport.authenticate('local', {
-  failureRedirect: '/login', failureFlash:true}), users.postLogin);
+    failureRedirect: '/login', failureFlash: true
+}), users.postLogin);
 app.get('/logout', users.doLogout);
 
+io.sockets.on('connection', function (socket) {
+    socket.on('notetitles', function (fn) {
+        notesModel.titles(function (err, titles) {
+            if (err) {
+                util.log(err);
+            } else {
+                fn(titles);
+            }
+        });
+    });
+    var broadcastUpdated = function (newnote) {
+        socket.emit('noteupdated', newnote);
+    };
+    notesModel.emitter.on('noteupdated', broadcastUpdated);
+    socket.on('disconnect', function () {
+        notesModel.emitter.removeListener('noteupdated', broadcastUpdated);
+    });
+
+    var broadcastDeleted = function (notekey) {
+        socket.emit('notedeleted', notekey);
+    };
+    notesModel.emitter.on('notedeleted', broadcastDeleted);
+    socket.on('disconnect', function () {
+        notesModel.emitter.removeListener('notedeleted', broadcastDeleted);
+    });
+});
+
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.use(function (req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handlers
@@ -122,24 +150,24 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
+    app.use(function (err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
     });
-  });
 }
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
 });
 
 
-module.exports = app;
+module.exports = {app: app, server: server};

@@ -2,7 +2,11 @@
 <html>
 <head>
     <title><%= title %></title>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js">
+    </script>
     <link rel='stylesheet' href="/stylesheets/style.css" />
+    <script src='/socket.io/socket.io.js'></script>
+    <script>var socket = io.connect('/')</script>
 </head>
 <body>
     <h1><%= title %></h1>
