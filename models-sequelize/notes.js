@@ -4,7 +4,7 @@ var events = require('events');
 var Note = undefined;
 
 
-var emmitter = exports.emitter = new events.EventEmitter();
+var emitter = exports.emitter = new events.EventEmitter();
 
 exports.connect = function (params, callback) {
     var sequlz = new Sequelize(params.dbname, params.username, params.password, params.params);

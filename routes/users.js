@@ -64,7 +64,31 @@ module.exports = {
     doLogout: function (req, res) {
         req.logout();
         res.redirect('/');
+    },
+
+    sendMessage: function (req, res) {
+        users.allUsers (function (err, theusers) {
+            res.render('sendmessage', {
+                title: "Send a message",
+                user: req.user,
+                users: theusers,
+                message: req.flash('error')
+            });
+        });
+    },
+
+    doSendMessage: function (req, res) {
+        users.sendMessage(req.body.seluserid, req.user.id, req.body.message, function (err) {
+            if (err) {
+                res.render('showerror', {
+                    user: req.user ? req.user : undefined,
+                    title: "Could not send message",
+                    error: err
+                });
+            } else {
+                res.redirect('/');
+            }
+        });
     }
-    
     
 };

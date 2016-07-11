@@ -10,3 +10,8 @@ h1 {
   text-align: center;
   text-decoration: underline;
 }
+#messageBox {
+  border: solid 2px red;
+  background-color: #eeeeee;
+  padding: 5px;
+}

@@ -1,0 +1,14 @@
+<% include top %>
+<form method='POST' action='/sendmessage'>
+    <p> To:
+    <select name="seluserid">
+        <% users.forEach(function(auser) { %>
+        <option value="<%= auser.id %>">
+        <%= auser.name %></option>
+        <% }); %>
+    </select>
+    </p>
+    <p>Message: <input type='text' name='message' /> </p>
+    <p><input type="submit" value="Submit" /> </p>
+</form>
+<% include bottom %>

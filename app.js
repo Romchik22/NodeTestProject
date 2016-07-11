@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cookieSession = require('cookie-session');
+var util = require('util');
 var flash = require('connect-flash');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -110,6 +111,9 @@ app.post('/login', passport.authenticate('local', {
     failureRedirect: '/login', failureFlash: true
 }), users.postLogin);
 app.get('/logout', users.doLogout);
+app.get('/sendmessage', users.ensureAuthenticated, users.sendMessage);
+app.post('/sendmessage', users.ensureAuthenticated, users.doSendMessage);
+
 
 io.sockets.on('connection', function (socket) {
     socket.on('notetitles', function (fn) {
@@ -126,6 +130,7 @@ io.sockets.on('connection', function (socket) {
     };
     notesModel.emitter.on('noteupdated', broadcastUpdated);
     socket.on('disconnect', function () {
+        util.log('disconnect - removing noteupdated listener');
         notesModel.emitter.removeListener('noteupdated', broadcastUpdated);
     });
 
@@ -134,7 +139,34 @@ io.sockets.on('connection', function (socket) {
     };
     notesModel.emitter.on('notedeleted', broadcastDeleted);
     socket.on('disconnect', function () {
+        util.log('disconnect - removing notedeleted listener');
         notesModel.emitter.removeListener('notedeleted', broadcastDeleted);
+    });
+
+    socket.on('getmessages', function (id, fn) {
+        usersModel.getMessages(id, function (err, messages) {
+            if (err) {
+                util.log('getmessages ERROR ' + err);
+            } else fn(messages);
+        });
+    });
+    var broadcastNewMessage = function (id) {
+        socket.emit('newmessage', id);
+    };
+    usersModel.emitter.on('newmessage', broadcastNewMessage);
+    var broadcastDelMessage = function () {
+        socket.emit('delmessage');
+    };
+    usersModel.emitter.on('delmessage', broadcastDelMessage);
+    socket.on('disconnect', function () {
+        util.log('disconnect - removing newmessage & delmesage listeners');
+        usersModel.emitter.removeListener('newmessage', broadcastNewMessage);
+        usersModel.emitter.removeListener('delmessage', broadcastDelMessage);
+    });
+    socket.on('dodelmessage', function (id, from, message, fn) {
+        usersModel.delMessage(id, from, message, function (err) {
+
+        });
     });
 });
 
