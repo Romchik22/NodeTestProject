@@ -13,6 +13,9 @@ var readNote = function (key, user, res, cb) {
                 error: err
             });
             cb(err);
+        }
+        else if (!data) { 
+            cb(new Error("No note found for " + key));
         } else {
             cb(null, data);
         }
@@ -53,21 +56,28 @@ module.exports = {
 
     view: function (req, res, next) {
         var user = req.user ? req.user : undefined;
-        if(req.query.key) {
+        if(req.query && req.query.key) {
             readNote(req.query.key, user, res, function (err, data) {
                 if (!err) {
                     res.render('noteview', {
                         title: data.title,
-                        user: user,
+                        user: user, //req.user ? req.user : undefined,
                         notekey: req.query.key,
                         note: data
+                    });
+                }
+                else {
+                    res.render('showerror', {
+                        title: "No note found for " + req.query.key,
+                        user: user, //req.user ? req.user : undefined,
+                        error: "Invalid key " + req.query.key
                     });
                 }
             });
         } else {
             res.render('showerror', {
                 title: "No key given for Note",
-                user: user,
+                user: user, //req.user ? req.user : undefined,
                 error: "Must provide a Key to view a Note"
             });
         }

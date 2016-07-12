@@ -21,5 +21,12 @@
     "passport": "*",
     "passport-local": "*",
     "socket.io": "*"
+  },
+  "devDependencies": {
+    "vows": "*"
+  },
+  "scripts": {
+    "start": "node app",
+    "test": "node test/test-model.js; node test/test-routes-notes.js"
   }
 }
